@@ -109,17 +109,35 @@ def find_diagnoal(word)
   width = lines.first.size
 
   #top left to bottom right
-  width.times do |col_start|
+  (-width .. width).each do |col_start|
     col = col_start
     str = ''
 
     height.times do |row|
-      str += lines[row][col].to_s
+      if col >= 0
+        str += lines[row][col].to_s
+      else
+        str += '0'
+      end
       col += 1
     end
 
     found = str.index(word)
-    return [found, col_start + found, found + word.size - 1, col_start + found + word.size - 1] if found
+    if found
+      debug "bottom left to top right"
+      debug "found: #{found}"
+      debug "string: #{str}"
+      debug "col start: #{col_start}"
+      debug "string size: #{str.size}"
+      debug "word size: #{word.size}"
+      debug "height: #{height}"
+      debug "width: #{width}"
+      debug "col: #{col}"
+      return [found, 
+              col_start + found, 
+              found + word.size - 1, 
+              col_start + found + word.size - 1]
+    end
 
     found = str.reverse.index(word)
     if found
@@ -134,8 +152,11 @@ def find_diagnoal(word)
     str = ''
 
     height.times do |row|
-      break if col < 0
-      str += lines[row][col].to_s
+      if col >= 0 
+        str += lines[row][col].to_s
+      else
+        str += '0'
+      end
       col -= 1
     end
 
@@ -151,15 +172,6 @@ def find_diagnoal(word)
     found = str.reverse.index(word)
     if found
       found = str.size - found
-      debug "bottom left to top right"
-      debug "found: #{found}"
-      debug "string: #{str}"
-      debug "col start: #{col_start}"
-      debug "string size: #{str.size}"
-      debug "word size: #{word.size}"
-      debug "height: #{height}"
-      debug "width: #{width}"
-      debug "col: #{col}"
       return [height - (height - word.size) - 1 + (found - word.size), 
               width - col_start - word.size - (found - word.size), 
               height - (height - word.size) - word.size + (found - word.size), 
@@ -178,9 +190,6 @@ end
 #TODO: EEBHE
 #TODO: SPELLING
 #TODO: LUNCH
-#TODO: MAP
-#TODO: PRINCIPAL
-#TODO: STUDENT
 
 #TODO bottom to top, left to right
 
