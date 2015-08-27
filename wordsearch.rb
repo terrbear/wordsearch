@@ -1,4 +1,5 @@
-
+#!/usr/bin/env ruby
+#
 require 'colorize'
 
 $debug = true
@@ -60,13 +61,14 @@ def print_board(x0, y0, x1, y1)
 end
 
 def find(word)
-  match = find_horizontal(word) || find_vertical(word) || find_diagnoal(word)
+  w = word.upcase
+  match = find_horizontal(w) || find_vertical(w) || find_diagnoal(w)
   puts match.inspect
   if match && match.size == 4
-    puts " #{word} ".center($width, "*")
+    puts " #{w} ".center($width, "*")
     #puts match.inspect
-    print_board(*match)
   end
+  match
 end
 
 def find_horizontal(word)
@@ -132,87 +134,74 @@ def find_diagnoal(word)
     str = ''
 
     height.times do |row|
+      break if col < 0
       str += lines[row][col].to_s
       col -= 1
     end
 
     found = str.index(word)
-    return [found, width - col_start - 1, found + word.size - 1, width - col_start - word.size] if found
+    if found
+    end
+
+    return [found, 
+            width - col_start - found - 1, 
+            found + word.size - 1, 
+            width - col_start - found - word.size] if found
 
     found = str.reverse.index(word)
     if found
-      debug "reversed, bottom left to top right"
+      found = str.size - found
+      debug "bottom left to top right"
       debug "found: #{found}"
       debug "string: #{str}"
       debug "col start: #{col_start}"
       debug "string size: #{str.size}"
+      debug "word size: #{word.size}"
       debug "height: #{height}"
       debug "width: #{width}"
       debug "col: #{col}"
-      return [height - found - 1, col_start - word.size, height - (found + word.size), col_start - 1]
+      return [height - (height - word.size) - 1 + (found - word.size), 
+              width - col_start - word.size - (found - word.size), 
+              height - (height - word.size) - word.size + (found - word.size), 
+              width - col_start - 1 - (found - word.size)]
     end
   end
 
   nil
 end
 
-puts "HI!".colorize(:white)
-puts
-puts
 
 #top to bottom, left to right diag
 #print_board(0, 0, 5, 5)
 
 
-<<TABLE
-S O M K E L G B O F A T R W M S M E 
-X O S O I R A L R B I H A E E N U B 
-S E C C O C A I U R R I D L C O S O 
-D P N I K R E S E E E N N C N Y I L 
-R E E P A N S T E S T K E O E A C G 
-P E A L D L U S T R E I L M I R I L 
-P C D S L P S U A G F N A E C C U L 
-K A H L M I D T Y L A G C G S N A W 
-N I M O O E N M U E C C N I C P S R 
-P W C A N F F G Y D M A T H I R C I 
-S E I T I V I T C A I P A C S E H T 
-F I E L D T R I P R S E N A S L O I 
-K O O B E T O N A G H I S R O U O N 
-T E A C H E R L E A R N I T R R L G 
-G N I D A E R H D P P L E S S O N R 
-TABLE
-
-#TODO: OLAR 
-#TODO: LAICOS  BROKE vs SEIDUTS WORKS
-#TODO: RALO
-#TODO: DESK BROKE
 #TODO: EEBHE
 #TODO: SPELLING
-#TODO: BUS
-#TODO: COMPUTER
-#TODO: GYM
 #TODO: LUNCH
 #TODO: MAP
-#TODO: PENCIL
 #TODO: PRINCIPAL
 #TODO: STUDENT
 
 #TODO bottom to top, left to right
-#
-#TEST:
-#teacher
-#reading
-#socialstudies
-#writing
 
-total_tests = %w(olar laicos seiduts ralo desk eebhe spelling bus computer gym lunch map pencil principal student teacher reading socialstudies writing)
+if __FILE__ == $0
+  puts "HI!".colorize(:white)
+  puts
+  puts
 
-working = %w(olar laicos seiduts ralo)
+  if false
+    total_tests = %w(olar laicos seiduts ralo desk eebhe spelling bus computer gym lunch map pencil principal student teacher reading socialstudies writing)
+    
+    working = %w(olar laicos seiduts ralo)
+    
+    total_tests = [(total_tests - working).first]
+    
+    total_tests.each do |word|
+      print_board(*(find(word.upcase)))
+    end
+  end
 
-total_tests = [(total_tests - working).first]
-
-total_tests.each do |word|
-  find(word.upcase)
+  print_board(*find(ARGV[0].upcase))
 end
 
 #
