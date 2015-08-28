@@ -124,15 +124,6 @@ def find_diagnoal(word)
 
     found = str.index(word)
     if found
-      debug "bottom left to top right"
-      debug "found: #{found}"
-      debug "string: #{str}"
-      debug "col start: #{col_start}"
-      debug "string size: #{str.size}"
-      debug "word size: #{word.size}"
-      debug "height: #{height}"
-      debug "width: #{width}"
-      debug "col: #{col}"
       return [found, 
               col_start + found, 
               found + word.size - 1, 
@@ -145,14 +136,14 @@ def find_diagnoal(word)
       return [found - 1, col_start + found - 1, (height - (str.size - (word.size - found))).abs, col_start + found - word.size]
     end
   end
-  
+
   #bottom left to top right
-  width.times do |col_start|
-    col = (width - (col_start + 1))
+  (width * 3).times do |col_start|
+    col = (width - (col_start + 1)).abs
     str = ''
 
     height.times do |row|
-      if col >= 0 
+      if col >= 0 && col <= width
         str += lines[row][col].to_s
       else
         str += '0'
@@ -161,8 +152,7 @@ def find_diagnoal(word)
     end
 
     found = str.index(word)
-    if found
-    end
+    puts "col: #{col_start} str: #{str}"
 
     return [found, 
             width - col_start - found - 1, 
@@ -172,10 +162,29 @@ def find_diagnoal(word)
     found = str.reverse.index(word)
     if found
       found = str.size - found
-      return [height - (height - word.size) - 1 + (found - word.size), 
-              width - col_start - word.size - (found - word.size), 
-              height - (height - word.size) - word.size + (found - word.size), 
-              width - col_start - 1 - (found - word.size)]
+
+      debug "bottom left to top right"
+      debug "found: #{found}"
+      debug "string: #{str}"
+      debug "col start: #{col_start}"
+      debug "string size: #{str.size}"
+      debug "word size: #{word.size}"
+      debug "height: #{height}"
+      debug "width: #{width}"
+
+      if col_start > width
+        zeros = str[/0*/].size
+        #fucked up word
+        return [height - (height - word.size) + (found - word.size),
+                width - (col_start + (width - col_start - word.size - (found - word.size))) - zeros,
+                height - (height - word.size) - word.size + (found - word.size) + 1,
+                width*2 + word.size + (width - col_start - 1 - (found - word.size))]
+      else
+        return [height - (height - word.size) - 1 + (found - word.size), 
+                (width - col_start - word.size - (found - word.size)), 
+                height - (height - word.size) - word.size + (found - word.size), 
+                width - col_start - 1 - (found - word.size)]
+      end
     end
   end
 
@@ -217,4 +226,3 @@ end
 #puts
 #
 
-find(ARGV[0].to_s.upcase) if ARGV[0]
