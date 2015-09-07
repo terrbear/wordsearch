@@ -130,8 +130,13 @@ def northwest_diagonal(word)
 
     found = str.reverse.index(word)
     if found
-      found = str.size - found
-      return [found - 1, col_start + found - 1, (height - (str.size - (word.size - found))).abs, col_start + found - word.size]
+      puts "found it reversed NW"
+      puts str
+      row = str.size - found - 1
+      puts "found: #{found}"
+      puts "col_start: #{col_start}"
+      col = col_start + row 
+      return [row, col, row - word.size + 1, col - word.size + 1]
     end
   end
 
