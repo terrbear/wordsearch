@@ -2,8 +2,9 @@
 #
 require 'colorize'
 
-$debug = true
+$debug = false
 
+# put your puzzle here, newlines separate rows. no spaces between characters. all uppercase.
 $lines = <<HERE
 SOMKELGBOFATRWMSME
 XOSOIRALRBIHAEENUB
@@ -24,6 +25,7 @@ HERE
 
 $width = $lines.split("\n").first.scan(/./).join(' ').size
 
+#put words to find here. case insensitive
 words_to_find = %w(ART BACKPACK BUS CAFETERIA CALENDAR CLASSROOM COMPUTER CRAYONS DESK ERASER FOLDER FRIENDSHIP GLOBE GLUE GYM LUNCH MAP MUSIC PENCIL PRINCIPAL RULER SCIENCE SCISSOR SOCIALSTUDIES STUDENT THINKINGCAP WELCOME WRITING)
 
 def debug(str)
@@ -44,7 +46,7 @@ def print_board(x0, y0, x1, y1)
     red_letters = [x_range, y_range].transpose
   end
 
-  puts ["x0:#{x0}", "y0:#{y0}", "x1:#{x1}", "y1:#{y1}"].join(', ')
+  debug ["x0:#{x0}", "y0:#{y0}", "x1:#{x1}", "y1:#{y1}"].join(', ')
 
   $lines.split("\n").each_with_index do |line, row|
     chars = line.scan(/./)
@@ -66,7 +68,6 @@ def find(word)
   puts match.inspect
   if match && match.size == 4
     puts " #{w} ".center($width, "*")
-    #puts match.inspect
   end
   match
 end
@@ -101,14 +102,11 @@ def find_vertical(word)
   nil
 end
 
-def find_diagnoal(word)
+def northwest_diagonal(word)
   lines = $lines.split("\n")
-
   height = lines.size
-
   width = lines.first.size
 
-  #top left to bottom right
   (-width .. width).each do |col_start|
     col = col_start
     str = ''
@@ -124,9 +122,9 @@ def find_diagnoal(word)
 
     found = str.index(word)
     if found
-      return [found, 
-              col_start + found, 
-              found + word.size - 1, 
+      return [found,
+              col_start + found,
+              found + word.size - 1,
               col_start + found + word.size - 1]
     end
 
@@ -137,7 +135,16 @@ def find_diagnoal(word)
     end
   end
 
-  #bottom left to top right
+  nil
+end
+
+def northeast_diagonal(word)
+  lines = $lines.split("\n")
+  height = lines.size
+  width = lines.first.size
+
+  #my math got a little screwy w/ the absolute value, but the consequence is just checking
+  #some of the diagonals twice (which already didn't match, so nbd)
   (width * 3).times do |col_start|
     col = (width - (col_start + 1)).abs
     str = ''
@@ -152,37 +159,38 @@ def find_diagnoal(word)
     end
 
     found = str.index(word)
-    puts "col: #{col_start} str: #{str}"
 
-    return [found, 
-            width - col_start - found - 1, 
-            found + word.size - 1, 
-            width - col_start - found - word.size] if found
+    if found
+      if col_start > width
+        zeros = str[/0*/].size
+
+        row = found + 1
+        col = col_start - width - zeros
+
+        return [row, col, row + word.size - 1, col - word.size + 1]
+      end
+
+      return [found,
+              width - col_start - found - 1,
+              found + word.size - 1,
+              width - col_start - found - word.size] if found
+    end
+
 
     found = str.reverse.index(word)
     if found
       found = str.size - found
 
-      debug "bottom left to top right"
-      debug "found: #{found}"
-      debug "string: #{str}"
-      debug "col start: #{col_start}"
-      debug "string size: #{str.size}"
-      debug "word size: #{word.size}"
-      debug "height: #{height}"
-      debug "width: #{width}"
-
       if col_start > width
         zeros = str[/0*/].size
-        #fucked up word
-        return [height - (height - word.size) + (found - word.size),
-                width - (col_start + (width - col_start - word.size - (found - word.size))) - zeros,
-                height - (height - word.size) - word.size + (found - word.size) + 1,
-                width*2 + word.size + (width - col_start - 1 - (found - word.size))]
+        row = height - (height - word.size) + (found - word.size)
+        #col = width - (col_start + (width - col_start - word.size - (found - word.size))) - zeros
+        col = col_start - width - zeros - word.size + 1
+        return [row, col, row - word.size + 1, col + word.size - 1]
       else
-        return [height - (height - word.size) - 1 + (found - word.size), 
-                (width - col_start - word.size - (found - word.size)), 
-                height - (height - word.size) - word.size + (found - word.size), 
+        return [height - (height - word.size) - 1 + (found - word.size),
+                (width - col_start - word.size - (found - word.size)),
+                height - (height - word.size) - word.size + (found - word.size),
                 width - col_start - 1 - (found - word.size)]
       end
     end
@@ -191,38 +199,21 @@ def find_diagnoal(word)
   nil
 end
 
-
-#top to bottom, left to right diag
-#print_board(0, 0, 5, 5)
-
-
-#TODO: EEBHE
-#TODO: SPELLING
-#TODO: LUNCH
-
-#TODO bottom to top, left to right
+def find_diagnoal(word)
+  northwest_diagonal(word) || northeast_diagonal(word)
+end
 
 if __FILE__ == $0
   puts "HI!".colorize(:white)
   puts
   puts
 
-  if false
-    total_tests = %w(olar laicos seiduts ralo desk eebhe spelling bus computer gym lunch map pencil principal student teacher reading socialstudies writing)
-    
-    working = %w(olar laicos seiduts ralo)
-    
-    total_tests = [(total_tests - working).first]
-    
-    total_tests.each do |word|
-      print_board(*(find(word.upcase)))
+  if ARGV[0]
+    print_board(*find(ARGV[0].upcase))
+  else
+    words_to_find.each do |word|
+      puts
+      print_board(*find(word))
     end
   end
-
-  print_board(*find(ARGV[0].upcase))
 end
-
-#
-#puts
-#
-
