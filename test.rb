@@ -1,4 +1,6 @@
 require "minitest/autorun"
+
+ARGV[0] ||= "nate.txt"
 require File.join(File.dirname(__FILE__), "wordsearch.rb")
 
 puts "TESTING!".colorize(:white)

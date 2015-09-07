@@ -4,24 +4,7 @@ require 'colorize'
 
 $debug = false
 
-# put your puzzle here, newlines separate rows. no spaces between characters. all uppercase.
-$lines = <<HERE
-SOMKELGBOFATRWMSME
-XOSOIRALRBIHAEENUB
-SECCOCAIURRIDLCOSO
-DPNIKRESEEENNCNYIL
-REEPANSTESTKEOEACG
-PEALDLUSTREILMIRIL
-PCDSLPSUAGFNAECCUL
-KAHLMIDTYLAGCGSNAW
-NIMOOENMUECCNICPSR
-PWCANFFGYDMATHIRCI
-SEITIVITCAIPACSEHT
-FIELDTRIPRSENASLOI
-KOOBETONAGHISROUON
-TEACHERLEARNITRRLG
-GNIDAERHDPPLESSONR
-HERE
+$lines = File.read(ARGV[0])
 
 $width = $lines.split("\n").first.scan(/./).join(' ').size
 
@@ -213,8 +196,8 @@ if __FILE__ == $0
   puts
   puts
 
-  if ARGV[0]
-    print_board(*find(ARGV[0].upcase))
+  if ARGV[1]
+    print_board(*find(ARGV[1].upcase))
   else
     words_to_find.each do |word|
       puts
