@@ -1,0 +1,10 @@
+Gem install colorize, then write your wordsearch to a text file, in all uppercase. (See nate.txt for an example.)
+
+Then, run it this way:
+
+ruby wordsearch.rb <puzzle text file> <word to find>
+
+Example:
+
+ruby wordsearch.rb freshprince.txt willsmith
+
