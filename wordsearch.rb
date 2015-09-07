@@ -135,7 +135,7 @@ def northwest_diagonal(word)
       row = str.size - found - 1
       puts "found: #{found}"
       puts "col_start: #{col_start}"
-      col = col_start + row 
+      col = col_start + row
       return [row, col, row - word.size + 1, col - word.size + 1]
     end
   end
@@ -170,7 +170,7 @@ def northeast_diagonal(word)
         zeros = str[/0*/].size
 
         row = found + 1
-        col = col_start - width - zeros
+        col = col_start - width - found
 
         return [row, col, row + word.size - 1, col - word.size + 1]
       end
@@ -190,7 +190,7 @@ def northeast_diagonal(word)
         zeros = str[/0*/].size
         row = height - (height - word.size) + (found - word.size)
         #col = width - (col_start + (width - col_start - word.size - (found - word.size))) - zeros
-        col = col_start - width - zeros - word.size + 1
+        col = col_start - width - zeros - found + 1
         return [row, col, row - word.size + 1, col + word.size - 1]
       else
         return [height - (height - word.size) - 1 + (found - word.size),
