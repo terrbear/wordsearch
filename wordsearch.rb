@@ -190,7 +190,7 @@ def northeast_diagonal(word)
         zeros = str[/0*/].size
         row = height - (height - word.size) + (found - word.size)
         #col = width - (col_start + (width - col_start - word.size - (found - word.size))) - zeros
-        col = col_start - width - zeros - found + 1
+        col = col_start - width - found + 1
         return [row, col, row - word.size + 1, col + word.size - 1]
       else
         return [height - (height - word.size) - 1 + (found - word.size),
